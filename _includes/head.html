@@ -5,12 +5,30 @@
     <meta name="author"  content="{{ site.author }}">
     <meta name="description" content="{{ site.description }}">
     <meta name="keywords"  content="{{ site.keyword }}">
-    <!-- Open Graph -->
-    <meta property="og:title" content="{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }}{% endif %}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ page.url | prepend: site.url }}">
-    <meta property="og:description" content="{{ site.description }}">
-    <meta property="og:site_name" content="{{ site.title }}">
+
+    {% seo %}
+
+    <meta name="theme-color" content="{{ site.chrome-tab-theme-color }}">
+    <meta name="msapplication-TileColor" content="{{ site.chrome-tab-theme-color }}">
+    <meta name="msapplication-TileImage" content="{{ site.baseurl }}/assets/img/manifest/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ site.baseurl }}/assets/img/manifest/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{{ site.baseurl }}/assets/img/manifest/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ site.baseurl }}/assets/img/manifest/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ site.baseurl }}/assets/img/manifest/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ site.baseurl }}/assets/img/manifest/favicon-16x16.png">
+
+    <link rel="shortcut icon" href="{{ site.baseurl }}/assets/img/manifest/favicon.ico" type="image/x-icon">
+    <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+    <link rel="manifest" href="{{ "/manifest.json" | relative_url }}">
+
     <link rel="stylesheet" href="//cdn.staticfile.org/normalize/6.0.0/normalize.min.css">
     <link rel="stylesheet" href="//at.alicdn.com/t/font_roc50gemkxpw4s4i.css">
     <link rel="stylesheet" href="/assets/css/github-markdown.css">

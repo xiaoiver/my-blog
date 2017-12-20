@@ -51,10 +51,13 @@ gulp.task('js', () => {
 });
 
 gulp.task('css', function(){
-    gulp.src('dev/sass/app.scss')
+    gulp.src([
+        'dev/sass/app.scss',
+        'dev/sass/post.scss'
+    ])
         .pipe($.sass())
         .pipe(gulp.dest('dev/sass'))
-        .pipe($.cleanCSS())
+        .pipe($.cleanCss())
         .pipe($.rename({suffix: '.min'}))
         .pipe(gulp.dest('assets/css'));
 });
@@ -99,7 +102,7 @@ gulp.task('serve', ['jekyll-build'], () => {
 });
 
 // Build Jekyll.
-gulp.task('jekyll-build', ['js'], $.shell.task(['jekyll build']));
+gulp.task('jekyll-build', ['js', 'css'], $.shell.task(['jekyll build']));
 
 /**
  * Do some additional work in production mode.
@@ -108,8 +111,7 @@ gulp.task('jekyll-build', ['js'], $.shell.task(['jekyll build']));
 gulp.task('build', () =>
     runSequence(
         'jekyll-build',
-        'minify-html',
-        'css'
+        'minify-html'
     )
 );
 

@@ -9,7 +9,7 @@ keywords:
   - javascript
   - xiaoiver
   - xiaop
-chrome-tab-theme-color: "#eee"
+chrome-tab-theme-color: "#4acaa8"
 baseurl: ""
 url: "https://xiaoiver.github.io"
 github_username: xiaoiver
@@ -23,7 +23,7 @@ responsive_image:
     - width: 800
     - width: 1400
       quality: 90
-  output_path_format: img/resized/%{width}/%{basename}
+  output_path_format: assets/img/resized/%{width}/%{basename}
   auto_rotate: true
 
 # Navigation links
@@ -41,7 +41,7 @@ avatar: '/assets/img/avatar.jpg'
 search: true
 
 # Night mode
-nightMode: true
+nightMode: false
 
 # Comments
 disqus: false
@@ -70,12 +70,32 @@ recommend-condition-size: 12 # a tag will be recommended if the size of it is mo
 # Build settings
 paginate: 6
 paginate_path: 'page:num'
-exclude: ['node_modules', 'dev', 'package.json', 'gulpfile.js', '.gitignore', 'README.md']
+exclude: ['node_modules', 'dev', 'package.json', 'gulpfile.babel.js', '.gitignore', 'README.md']
 
 # Markdown
 markdown: kramdown
 highlighter: rouge
 kramdown:
   input: GFM
+
+# PWA
+pwa:
+  sw_filename: service-worker.js
+  dest_js_directory: assets/js
+  cache_name: xiaop-blog-cache
+  precache_channel_name: sw-precache
+  precache_recent_posts_num: 3
+  precache_glob_directory: /
+  precache_glob_patterns:
+    - "assets/{js,css,fonts}/**/*.{js,css,eot,svg,ttf,woff}"
+    - index.html
+  precache_glob_ignores:
+    - sw-register.js
+    - "fonts/**/*"
+  runtime_cache:
+    - route: /^api\/xxx/
+      strategy: cacheOnly
+    - route: "'/api/xxxxx'"
+      strategy: cacheOnly
 
 RSS: false

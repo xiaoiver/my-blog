@@ -158,10 +158,10 @@ a {
     z-index: 0; }
 
 .banner-theme-default {
-  background: -webkit-linear-gradient(0deg, #3CD5FF, #007AFF);
-  background: -o-linear-gradient(0deg, #3CD5FF, #007AFF);
-  background: -moz-linear-gradient(0deg, #3CD5FF, #007AFF);
-  background: linear-gradient(100deg, #3CD5FF, #007AFF); }
+  background: -webkit-linear-gradient(0deg, #4acaa8, #007AFF);
+  background: -o-linear-gradient(0deg, #4acaa8, #007AFF);
+  background: -moz-linear-gradient(0deg, #4acaa8, #007AFF);
+  background: linear-gradient(100deg, #4acaa8, #007AFF); }
 
 .banner-theme-pink {
   background: -webkit-linear-gradient(0deg, #FFCE69, #FA709A);
@@ -862,6 +862,36 @@ a {
     color: #D75885; }
   .night-mode .token.keyword {
     color: #61BDCF; }
+
+.update-toast {
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  padding: 0 14px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #dc322f;
+  color: white;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  z-index: 999999;
+  opacity: 0;
+  transform: translateY(-28px);
+  transition: all .5s ease-in-out; }
+  .update-toast.show {
+    opacity: 1;
+    transform: translateY(0); }
+  .update-toast .update-toast-text {
+    flex: 1; }
+  .update-toast .update-toast-refresh-btn {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(../icons/refresh.svg) no-repeat center;
+    background-size: 100%; }
 
 @media screen and (min-width: 1920px) {
   .home-banner {
