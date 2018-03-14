@@ -93,9 +93,11 @@ pwa:
     - sw-register.js
     - "fonts/**/*"
   runtime_cache:
-    - route: /^api\/xxx/
-      strategy: cacheOnly
-    - route: "'/api/xxxxx'"
-      strategy: cacheOnly
+    - route: /assets\/(img|icons)/
+      strategy: cacheFirst
+    - route: /^https?:\/\/cdn.staticfile.org/
+      strategy: staleWhileRevalidate
+    - route: /^https?:\/\/at.alicdn.com/
+      strategy: staleWhileRevalidate
 
 RSS: false
