@@ -99,5 +99,7 @@ pwa:
       strategy: staleWhileRevalidate
     - route: /^https?:\/\/at.alicdn.com/
       strategy: staleWhileRevalidate
+    - route: /^https?:\/\/cloud.netlifyusercontent.com/
+      strategy: staleWhileRevalidate
 
 RSS: false
