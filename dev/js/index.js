@@ -21,7 +21,13 @@ $(document).ready(function(){
     /*
     *  Header Bar
     */
-    if($(window).width() > 695) {
+    var currentWidth = $(window).width();
+    var catalog = $('.catalog-container');
+    if (currentWidth > 1200) {
+        catalog.show();
+    }
+
+    if(currentWidth > 695) {
 
         var header = $('.g-header');
         var header_h = header.outerHeight();
@@ -74,6 +80,15 @@ $(document).ready(function(){
                 header.removeClass('headerDown');
             }
             scFlag = scrollTop;
+
+            // catalog
+            if (currentWidth > 1100) {
+                if (scrollTop > 500) {
+                    catalog.addClass('fixed');
+                } else {
+                    catalog.removeClass('fixed');
+                }
+            }
         });
     }
 

@@ -5,3 +5,57 @@
         text-align: center;
     }
 }
+
+.catalog-container {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    display: none;
+    width: calc(50% - 400px);
+    padding: 0 20px;
+    z-index: 100;
+
+    &.fixed {
+        position: fixed;
+    }
+
+    .side-catalog {
+        .catalog-title {
+            padding: 30px 0;
+        }
+        .catalog-body {
+            li {
+                position: relative;
+
+                a {
+                    color: #a6a6a6;
+                    padding-left: 10px;
+                    max-width: 100%;
+                    display: inline-block;
+                    vertical-align: middle;
+                    height: 30px;
+                    line-height: 30px;
+                    overflow: hidden;
+                    text-decoration: none;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                }
+
+                &.active {
+                    border-radius: 4px;
+                    background-color: #F5F5F5;
+                    a {
+                        color: #0085a1!important;
+                    }
+                }
+
+                &.h2_nav {
+                    left: 0;
+                }
+                &.h3_nav {
+                    left: 10px;
+                }
+            }
+        }
+    }
+}
