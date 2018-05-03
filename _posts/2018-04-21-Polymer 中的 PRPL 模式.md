@@ -7,6 +7,7 @@ category: coding
 tags: WebComponents Polymer
 author: xiaOp
 comments: true
+index: 36
 ---
 
 Chrome 提出 PRPL 的模式在自家 Polymer 中的应用状况是什么样的呢？与其他流行框架相比有哪些区别呢？

@@ -7,6 +7,7 @@ category: coding
 tags: vue WebComponents
 author: xiaOp
 comments: true
+index: 42
 ---
 
 都知道 Polymer 以 WebComponents 为基础，其实 Vue 也有与之结合的插件，代码不多，最近抽空研究了一下。
@@ -16,6 +17,8 @@ comments: true
 * [HTML template](https://www.html5rocks.com/en/tutorials/webcomponents/template/)
 * Custom Elements
 * Shadow DOM
+
+{% responsive_image path: assets/img/webcomponents.png alt: "WebComponents 组成" %}
 
 前两个标准算是基础部分，先介绍下 Custom Elements，值得一提的是这个标准本身也发生过重大修改，最新的版本是 v1。
 

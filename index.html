@@ -18,6 +18,7 @@ description: 分享写代码，听音乐，看电影的心得
     <div class="article-list">
         {% for post in paginator.posts %}
             <article class="article-item">
+                <span class="post-index">#{{ post.index }}</span>
                 {% if post.cover %}
                 <div class="post-cover">
                     <a class="post-link" href="{{ post.url }}" title="{{ post.title }}"></a>

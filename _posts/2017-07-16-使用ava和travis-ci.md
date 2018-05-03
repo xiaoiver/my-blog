@@ -6,6 +6,7 @@ date:   2017-07-16
 category: coding
 tags: ava travis
 author: xiaOp
+index: 6
 ---
 
 最近给 [skeleton 插件](https://github.com/lavas-project/vue-skeleton-webpack-plugin)加上了测试用例，顺便使用了下自动集成工具。

@@ -6,6 +6,7 @@ date:   2017-07-14
 category: coding
 tags: webpack
 author: xiaOp
+index: 4
 ---
 
 在[ 如何在项目中使用图标 ](https://lavas.baidu.com/guide/vue/doc/vue/advanced/how-to-use-icon)一节中，我们介绍了开发时引入自定义 svg 图标的方法，例如：

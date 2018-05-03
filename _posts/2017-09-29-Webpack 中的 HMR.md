@@ -8,6 +8,7 @@ category: coding
 tags: javascript webpack eventstream
 comments: false
 author: xiaOp
+index: 16
 ---
 
 在使用 Webpack 构建项目时，开发模式下代码的 hotreload 特性帮助开发者节省了很多手动刷新浏览器的时间。最近在项目中遇到了这方面的问题，决定深入研究一下背后的实现原理。

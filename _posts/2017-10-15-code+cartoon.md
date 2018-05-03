@@ -6,6 +6,7 @@ date:   2017-10-15
 category: coding
 tags: tech-blog
 author: xiaOp
+index: 20
 ---
 
 说实话，第一次在[Hacks](https://hacks.mozilla.org/)上看到包含如下图片的文章是很意外的。看过不少技术文章，穿插卡通画的还是头一遭，而且这诡异的画风是咋回事。

@@ -7,6 +7,7 @@ date:   2017-07-22
 category: coding
 tags: ruby jekyll github-pages
 author: xiaOp
+index: 8
 ---
 
 [Github Pages](https://pages.github.com/)能够帮助我们托管 jekyll 项目，我们只需要将代码提交到指定分支(master/gh-pages)，github 将自动完成构建。

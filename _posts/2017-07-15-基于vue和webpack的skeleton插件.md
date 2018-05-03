@@ -6,6 +6,7 @@ date:   2017-07-15
 category: coding
 tags: vue webpack
 author: xiaOp
+index: 5
 ---
 
 > 这是一个基于 vue 的 webpack 插件，为单页和多页应用生成 skeleton，提升首屏展示体验。
