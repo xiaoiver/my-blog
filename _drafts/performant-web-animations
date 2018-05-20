@@ -1,3 +1,7 @@
 [动画中的性能注意点](https://blog.algolia.com/performant-web-animations/)
 
 [will-change](https://developers.google.com/web/fundamentals/design-and-ui/animations/animating-between-views)
+
+[](https://dassur.ma/things/forcing-layers/)
+
+https://developer.mozilla.org/en-US/Apps/Fundamentals/Performance/CSS_JavaScript_animation_performance#Performance_comparison_transitions_vs._requestAnimationFrame

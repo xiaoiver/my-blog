@@ -17,3 +17,10 @@ published: false
 [翻译](https://zhuanlan.zhihu.com/p/33727979)
 * [检查 favicon](https://realfavicongenerator.net/)
 * [iOS 中的图标](https://developer.apple.com/library/content/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html)
+
+
+[manifest scope](https://developer.mozilla.org/en-US/docs/Web/Manifest)
+
+[](https://www.pwastats.com/)
+
+[](http://itsze.ro/blog/2017/04/09/infinite-list-and-react.html)
