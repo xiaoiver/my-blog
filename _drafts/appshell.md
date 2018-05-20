@@ -47,4 +47,9 @@ https://developers.google.com/web/fundamentals/performance/prpl-pattern/
 https://huangxuan.me/2017/07/12/upgrading-eleme-to-pwa/
 https://zhuanlan.zhihu.com/p/34702561
 
-[](https://medium.com/@addyosmani/progressive-web-apps-with-react-js-part-i-introduction-50679aef2b12)
+[PWA + React](https://medium.com/@addyosmani/progressive-web-apps-with-react-js-part-i-introduction-50679aef2b12)
+[PWA 指标](https://www.youtube.com/watch?v=IxXGMesq_8s)
+[PWA Showcase](https://developers.google.com/web/showcase/)
+
+[Route-based chunking](https://gist.github.com/addyosmani/44678d476b8843fd981ff8011d389724)
+[Flipkart Slide](https://speakerdeck.com/abhinavrastogi/next-gen-web-scaling-progressive-web-apps)
