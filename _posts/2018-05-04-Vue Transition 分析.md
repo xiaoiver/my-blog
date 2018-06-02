@@ -1,13 +1,13 @@
 ---
 layout: post
 title: "Vue Transition 分析"
-cover: "/assets/img/vue.png"
+cover: "/assets/img/vue-render.png"
 date:   2018-05-04
 category: coding
 tags: vue
 author: xiaOp
 comments: true
-index: 43
+index: 44
 ---
 
 有了之前对于 Vue 整个渲染流程的分析，我们可以深入研究一下 `<transition>` 的实现原理。
