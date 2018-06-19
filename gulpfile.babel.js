@@ -28,32 +28,40 @@ gulp.task('minify-html', () => {
 
 // Concatenate, transpiles ES2015 code to ES5 and minify JavaScript.
 gulp.task('scripts', () => {
-    return gulp.src('dev/js/index.js')
+    return gulp.src([
+        'dev/js/index.js',
+        'dev/js/collectives.js'
+    ])
+        .pipe($.babel({
+            presets: ['env']
+        }))
         .pipe($.uglify())
         .pipe($.rename({suffix: '.min'}))
         .pipe(gulp.dest('assets/js'))
 });
 
 // Add triple-dashed lines
-gulp.task('add-triple-dashes',  () => {
-    return gulp.src([
-            './assets/js/index.min.js'
-        ])
-        .pipe($.insert.prepend('---\n---\n'))
-        .pipe(gulp.dest('assets/js'));
-});
+// gulp.task('add-triple-dashes',  () => {
+//     return gulp.src([
+//             './assets/js/index.min.js',
+//             './assets/js/collectives.min.js'
+//         ])
+//         .pipe($.insert.prepend('---\n---\n'))
+//         .pipe(gulp.dest('assets/js'));
+// });
 
 gulp.task('js', () => {
     runSequence(
         'scripts',
-        'add-triple-dashes'
+        // 'add-triple-dashes'
     )
 });
 
 gulp.task('css', function(){
     gulp.src([
         'dev/sass/app.scss',
-        'dev/sass/post.scss'
+        'dev/sass/post.scss',
+        'dev/sass/collectives.scss'
     ])
         .pipe($.sass())
         .pipe(gulp.dest('dev/sass'))
@@ -61,20 +69,6 @@ gulp.task('css', function(){
         .pipe($.rename({suffix: '.min'}))
         .pipe(gulp.dest('assets/css'));
 });
-
-// gulp.task('bundle-sw', () => {
-//     return wbBuild.generateSW({
-//         globDirectory: './_site',
-//         swDest: './_site/sw.js',
-//         globPatterns: ['**\/*.{js,html,css,json}']
-//     })
-//     .then(() => {
-//         console.log('Service worker generated.');
-//     })
-//     .catch((err) => {
-//         console.log('[ERROR] This happened: ' + err);
-//     });
-// });
 
 // Watch change in files.
 gulp.task('serve', ['jekyll-build'], () => {
@@ -97,7 +91,8 @@ gulp.task('serve', ['jekyll-build'], () => {
         '_layouts/**/*.html',
         '_posts/**/*.md',
         'index.html',
-        'tags.html'
+        'tags.html',
+        'collectives.html'
     ], ['jekyll-build', browserSync.reload]);
 });
 

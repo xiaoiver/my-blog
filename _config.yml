@@ -30,6 +30,7 @@ responsive_image:
 nav:
   home: '/'
   tags: '/tags.html'
+  collectives: '/collectives.html'
 
 # Author 配置博主信息
 author: '潘宇琪'
@@ -103,3 +104,6 @@ pwa:
       strategy: staleWhileRevalidate
 
 RSS: false
+
+# Google Analytics
+google_analytics: true

@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "gulp serve",
-    "deploy": "gulp deploy"
+    "dev": "JEKYLL_ENV=development gulp serve",
+    "deploy": "JEKYLL_ENV=production gulp deploy"
   },
   "author": "",
   "license": "ISC",

@@ -170,8 +170,73 @@ iframe {
 }
 {% endprism %}
 
+## 滚动穿透
+
+这个问题倒不是 iframe 独有，而是 iOS 下普遍存在的问题。
+
+在常见的对话框浮层场景下，在 `fixed` 定位的浮层上滚动时，很容易滚动到下层的 `body` 上，造成穿透现象。
+
+![](/assets/img/1_default_bottom_overscroll.gif)
+
+首先想到的方案是在下层容器上禁用滚动：
+{% prism css linenos %}
+html, body {
+    overflow: hidden;
+}
+{% endprism %}
+
+但存在两个问题：
+1. 在安卓上可行，iOS 下无效
+2. 关闭浮层时需要恢复 `body` 上的滚动距离，因为禁用滚动的瞬间会丢失当前的滚动距离
+
+为了解决这两个问题，开发者总结出了以下方案。
+
+### body-scroll-lock
+
+![](/assets/img/body-scroll-lock.png)
+
+大致思路是安卓上沿用 `overflow: hidden` 方案。iOS 上监听 `touch` 系列事件，在滚动到顶部和底部时禁用掉浏览器默认行为：
+{% prism javascript linenos %}
+const clientY = event.targetTouches[0].clientY - initialClientY;
+// 滚动到顶
+if (targetElement && targetElement.scrollTop === 0 && clientY > 0) {
+    return preventDefault(event);
+}
+// 滚动到底
+if (isTargetElementTotallyScrolled(targetElement) && clientY < 0) {
+    return preventDefault(event);
+}
+{% endprism %}
+
+虽然不会存在滚动穿透问题了，但是这个方案依然存在两个问题：
+1. 安卓上恢复滚动距离的问题依然存在
+2. iOS 上由于禁用掉了浏览器默认行为，弹性滚动也不存在了
+
+那么有没有完美的解决方案呢？
+
+### 1px 滚动
+
+通过观察我们发现，只有滚动超过顶部或者底部触发 iOS 的默认行为才会带来问题，那么如果我们能在滚动到边缘时保留 1px 的距离，这个问题也就不存在了。参考[这个 gist](https://github.com/luster-io/prevent-overscroll/blob/master/index.js)的做法：
+{% prism javascript linenos %}
+el.addEventListener('touchstart', function() {
+    let top = el.scrollTop;
+    let totalScroll = el.scrollHeight;
+    let currentScroll = top + el.offsetHeight;
+
+    if (top === 0) {
+        el.scrollTop = 1;
+    } else if (currentScroll === totalScroll) {
+        el.scrollTop = top - 1;
+    }
+});
+{% endprism %}
+
+其实 Google AMP 也是这么做的，在 iOS 上打开 AMP 页面，滚动到顶触发 iOS 的弹性滚动，仔细观察页面会有一个轻微的不易察觉的滚动。
+
 ## 参考资料
 
 * [AMP, iOS, Scrolling and Position Fixed](https://medium.com/@dvoytenko/amp-ios-scrolling-and-position-fixed-b854a5a0d451)
 * [AMP, iOS, Scrolling and Position Fixed Redo — the wrapper approach](https://hackernoon.com/amp-ios-scrolling-and-position-fixed-redo-the-wrapper-approach-8874f0ee7876)
 * [The AMP Project and Igalia working together to improve WebKit and the Web Platform](http://frederic-wang.fr/amp-and-igalia-working-together-to-improve-the-web-platform.html)
+* [Body scroll lock — making it work with everything](https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177)
+* [Six things I learnt about iOS Safari's rubber band scrolling](http://blog.christoffer.online/2015-06-10-six-things-i-learnt-about-ios-rubberband-overflow-scrolling/)
