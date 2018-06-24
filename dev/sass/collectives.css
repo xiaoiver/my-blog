@@ -18,8 +18,11 @@ body {
   position: relative; }
   .tags-banner h3 {
     position: absolute;
-    bottom: 0;
-    right: 0; }
+    bottom: 8px;
+    right: 8px; }
+    .tags-banner h3 a {
+      color: #fff;
+      text-decoration: underline; }
 
 .preview-open {
   overflow: hidden; }
