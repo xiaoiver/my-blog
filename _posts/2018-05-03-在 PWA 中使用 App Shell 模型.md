@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "App Shell 模型"
-subtitle: "在 PWA 中提升性能和用户感知体验"
+title: "在 PWA 中使用 App Shell 模型"
+subtitle: "提升性能和用户感知体验"
 cover: "/assets/img/pwa-appshell.png"
 date:   2018-05-03
 category: coding
@@ -37,6 +37,8 @@ index: 43
 * Server-side Rendering 首屏加载速度快，但是后续每次页面间跳转都需要重新下载全部资源。
 * Client-side Rendering 首屏加载速度慢，后续页面跳转迅速。
 
+{% responsive_image path: assets/img/cs&ss.png alt: "客户端&服务端渲染" %}
+
 所以两者结合可以得到最好的效果，首屏由 SSR 渲染，后续由 CSR 动态渲染页面中部分内容，类似 SPA 的效果。
 借助构建工具例如 Webpack 和前端框架（React Vue）提供的服务端渲染特性，同一套代码在编译后可以同时运行在双端，这就是 Universal/Isomorphic 同构应用的思想。
 
@@ -53,6 +55,9 @@ PRPL 模式是 Google 提出的，包含以下特性：
 * Render 渲染 - 渲染初始路由。
 * Precache 预缓存 - 预缓存剩余路由。
 * Lazyload 延迟加载 - 延迟加载并按需创建剩余路由。
+
+简单用一张图表示整个过程：
+{% responsive_image path: assets/img/prpl.png alt: "PRPL 模式演示" %}
 
 前面说过，App Shell 在内容上是由 HTML CSS 和 JS 组成的资源集合。为了保证这些资源的加载速度，必须精简。
 在这一思路下，它将包含：
@@ -76,28 +81,14 @@ PRPL 模式是 Google 提出的，包含以下特性：
 * 代码在编写时不分割，使用特殊的语法指示构建工具在编译时进行分割处理
 
 对于第一种做法，我们以 Polymer 为例。由于使用了 HTML imports，需要分割的代码天然就是物理分割，包含在各自 HTML 中的。
-首先让我们看一下 Polymer SPA 的项目结构：
-{% responsive_image path: assets/img/app-build-components.png alt: "Polymer 项目结构" %}
-
-entrypoint 即项目的入口文件，应该足够精简，仅包含特性检测之后引入的 polyfill，App Shell。
-App Shell 包含了前端路由，全局的导航 UI 等等，以及需要实现动态加载 fragment 的逻辑。
-fragment 类似异步路由组件。
-
 在构建时，配套的构建工具会读取自身的配置文件 `polymer.json`，其中显式指明了这三部分内容：
-{% prism json linenos %}
-{
-    "entrypoint": "index.html",
-    "shell": "src/my-app.html",
-    "fragments": [
-        "src/my-view1.html",
-        "src/my-view2.html",
-        "src/my-view3.html",
-        "src/my-view404.html"
-    ]
-}
-{% endprism %}
+* entrypoint 即项目的入口文件，应该足够精简，仅包含特性检测之后引入的 polyfill
+* App Shell。App Shell 包含了前端路由，全局的导航 UI 等等，以及需要实现动态加载 fragment 的逻辑。
+* fragment 类似异步路由组件。
 
-而对于第二种做法，最熟悉的例子就是 Webpack 了。
+{% responsive_image path: assets/img/polymer-code-splitting.png alt: "Polymer 中的代码分割" %}
+
+而对于第二种做法，我们开发者最熟悉的例子就是 Webpack 了。
 引入 `babel-plugin-syntax-dynamic-import` 插件，开发者就可以使用 dynamic-import 语法：
 {% prism javascript linenos %}
 import(/* webpackChunkName: "my-view1" */ './my-view1')
@@ -110,7 +101,7 @@ import(/* webpackChunkName: "my-view1" */ './my-view1')
 
 ### 路由支持
 
-除了负责初始路由的渲染，还需要支持后续动态加载并添加剩余路由。
+对于 PRPL 模式中的路由来说，除了负责初始路由的渲染，还需要支持后续动态加载并添加剩余路由。
 
 Polymer 提供了异步引入的 API，供配套的路由使用。
 这样就能实现异步加载，并在出错时跳转到 404 页面：
@@ -157,6 +148,7 @@ const LoadableComponent = Loadable({
 {% prism html linenos %}
 <link rel="prefetch" href="image.png">
 {% endprism %}
+但是对于开发者而言，需要更精确地控制缓存，因此还是得使用 Service Worker。
 
 在项目构建阶段，将静态资源列表（数组形式）及本次构建版本号注入 Service Worker 代码中。
 在 SW 运行时（Install 阶段）依次发送请求获取静态资源列表中的资源（JS,CSS,HTML,IMG,FONT…），成功后放入缓存并进入下一阶段（Activated）。这个在实际请求之前进行缓存的过程就是预缓存。
@@ -202,23 +194,6 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest);
 但是对于不支持 HTTP/2 的浏览器，还有 `<preload>` 这种方式，考虑兼容性两者可以同时使用。
 {% responsive_image path: assets/img/twitter-preload.png alt: "twitter preload" %}
 
-在 Polymer 中，可以在 `polymer.json` 中配置不同的打包策略：
-{% prism json linenos %}
-"builds": [
-    {
-       "preset": "es5-bundled"
-    },
-    {
-       "preset": "es6-bundled"
-    },
-    {
-       "preset": "es6-unbundled"
-    }
-]
-{% endprism %}
-
-{% responsive_image path: assets/img/app-build-bundles.png alt: "Polymer 打包策略" %}
-
 ## SSR 中的应用
 
 在 SPA 架构的应用中，App Shell 通常包含在 HTML 页面中，连同页面一并被预缓存，保证了离线可访问。但是在 SSR 架构场景下，情况就不一样了。所有页面首屏均是服务端渲染，预缓存的页面不再是有限且固定的。如果预缓存全部页面，SW 需要发送大量请求不说，每个页面都包含的 App Shell 部分都被重复缓存，也造成了缓存空间的浪费。
@@ -235,13 +210,20 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest);
 
 ### 传统后端模版项目
 
-以传统的后端模版项目为例，在不支持 Service Worker 的情况下，根据 URL 使用默认 Layout + 对应视图模版响应。
-如果支持 Service Worker
-{% responsive_image path: assets/img/ssr-appshell.png alt: "后端模版改造" %}
+以传统的后端模版项目为例，对于用户的请求，根据 URL 使用默认 Layout + 对应视图模版进行响应。
+{% responsive_image path: assets/img/ssr-template-user.png alt: "用户访问服务器" %}
 
-### 同构项目
+而 Service Worker 安装时，也会向服务器发送请求。对于服务器而言，新增了一种访问角色，与之对应的，需要增加一系列针对 Service Worker 的路由规则，将单独的视图模版和默认 Layout 返回给 Service Worker。
+{% responsive_image path: assets/img/ssr-template-sw.png alt: "Service Worker 访问服务器" %}
 
-对于采用同构模式的 React Vue 项目，只需要加上 `/appshell` 路由。
+对于用户而言，在 Service Worker 安装成功之后，对于 HTML 的请求都会被拦截，渲染模板的工作全部由 Service Worker 完成。
+{% responsive_image path: assets/img/ssr-template.png alt: "Service Worker 渲染模板" %}
+
+下面我们来看具体的示例代码，如果使用类似 express 这样的服务器：
+{% responsive_image path: assets/img/ssr-server.png alt: "服务器渲染示例" %}
+
+而在这样的同构思路下，如果服务端代码也是使用 Node.js 编写，理想情况下 Service Worker 就能复用其中的模板渲染和路由逻辑。
+{% responsive_image path: assets/img/ssr-sw.png alt: "Service Worker 渲染示例" %}
 
 ## App Shell 性能
 
@@ -249,33 +231,16 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest);
 
 我们以 Vue hackernews 2.0 这个同构项目为例，在没有使用代码分割的情况下，所有的业务逻辑全在 app.js 中。
 
-                           Asset       Size  Chunks                    Chunk Names
-  vendor.46d9cce6b27c5475b6ce.js     338 kB       0  [emitted]  [big]  vendor
-     app.1a5e83f4accca4450b49.js     253 kB       1  [emitted]  [big]  app
-manifest.54e67e9f17df71efc259.js  804 bytes       2  [emitted]         manifest
- common.1a5e83f4accca4450b49.css    5.59 kB       1  [emitted]         app
-
 在 3G 环境下，首屏加载时间约为 2.9s
 {% responsive_image path: assets/img/vue-hackernews-raw.png alt: "原始状态" %}
 
-使用代码分割后，首屏不需要的业务逻辑从 app.js 中移动到了异步加载文件中。
-
-                           Asset     Size  Chunks                    Chunk Names
-       0.81cb3a55e9127846bdf2.js  6.89 kB       0  [emitted]
-       1.49213d00f0a6085fcf87.js   241 kB       1  [emitted]
-       2.7c9d08f57b816c494d40.js  1.79 kB       2  [emitted]
-  vendor.a906363048c601379d00.js   338 kB       3  [emitted]  [big]  vendor
-     app.ded3229099da620999f3.js   9.8 kB       4  [emitted]         app
-manifest.c7c3afdf0ac4db474116.js  1.45 kB       5  [emitted]         manifest
- common.ded3229099da620999f3.css  1.37 kB       4  [emitted]         app
-
-首屏加载时间约为 1.2s
+使用代码分割后，首屏不需要的业务逻辑从 app.js 中移动到了异步加载文件中。首屏加载时间约为 1.2s
 {% responsive_image path: assets/img/vue-hackernews-code-splitting.png alt: "路由级别的 Code Splitting" %}
 
-使用 Service Worker 预缓存之后，再次访问速度极快 0.2s
+使用 Service Worker 预缓存之后，再次访问速度极快，仅 0.2s
 {% responsive_image path: assets/img/vue-hackernews-sw.png alt: "使用 Service Worker 后，再次访问" %}
 
-还有优化空间？
+首屏性能提升是很明显的，但是还有优化空间吗？
 
 ## Skeleton 方案
 
@@ -328,72 +293,9 @@ manifest.c7c3afdf0ac4db474116.js  1.45 kB       5  [emitted]         manifest
 </script>
 {% endprism %}
 
-### 优化展现速度
+## 总结
 
-虽然说 Skeleton 本身并不能减少 First meaningful page 也就是真实页面内容出现的时间，但是本身的展示也存在白屏时间。
-
-让我们先来看一下时间线，打开 Chrome Devtool 中性能面板：
-![](https://boscdn.baidu.com/assets/lavas/codelab/skeleton.png)
-
-不难发现，在 HTML 下载完毕之后，浏览器仍然需要等待样式（index.css）下载完毕才开始渲染骨架屏。
-这是由于浏览器构建渲染树需要 DOM 和 CSSOM，因此 HTML 和 CSS 都是会阻塞渲染的资源。这在大部分场景下都是合情合理的，毕竟让用户看到内容在样式加载前后闪烁（FOUC）是需要避免的。
-
-但是骨架屏所需的样式已经内联在 HTML 中，供前端渲染内容使用的 CSS 显然不应该阻塞骨架屏的渲染。有没有办法改变这个特性呢？
-
-首先想到的办法是，将 `<link>` 从 `<head>` 中挪到 `<body>` 中，HTML 规范允许这样做：
-> A `<link>` tag can occur either in the head element or in the body element (or both), depending on whether it has a link type that is body-ok. For example, the stylesheet link type is body-ok, and therefore a `<link rel="stylesheet">` is permitted in the body.
-
-这样 CSS 只会阻塞后续内容，骨架屏可以不受影响地被渲染。
-{% prism html linenos %}
-<head>
-    <style>Skeleton CSS</style>
-</head>
-<body>
-    <div>Skeleton DOM</div>
-    <link rel='stylesheet' href='index.css'>
-    <div id='app'>...</div>
-</body>
-{% endprism %}
-
-但是在 Chrome 中测试后会发现 CSS 依然阻塞渲染，在 Chrome 的关于这个问题的一个[讨论](https://bugs.chromium.org/p/chromium/issues/detail?id=481122)中，能看到由于针对这种情况的渲染策略并没有严格的规范，不同浏览器下出现了不同的表现：
-* Chrome 依旧阻塞渲染。[Webpagetest](http://www.webpagetest.org/video/compare.php?tests=150424_57_12PJ-r:1-c:0)
-* IE 符合预期，仅仅阻塞后续内容。[Webpagetest](http://www.webpagetest.org/video/compare.php?tests=150424_NH_12XE-r:1-c:0)
-* Firefox 完全不阻塞渲染，除非 `<head>` 中已经出现了阻塞的 `<link>`。这样后续内容就会出现 FOUC。[Webpagetest](http://www.webpagetest.org/video/compare.php?tests=150424_MS_1297-r:1-c:0)。需要在 `<link>` 之后加上空的 `<script> </script>` 达到阻塞后续内容渲染的效果。
-
-[loadCSS](https://github.com/filamentgroup/loadCSS) 为异步加载样式表提供了两种方式：
-1. `<link ref='preload'>`
-2. 提供全局 `loadCSS` 方法，动态加载指定样式表
-我们将使用第一种方法，也是 loadCSS 推荐的方式。
-
-`<link ref='preload'>` 让浏览器仅仅请求下载样式表，但完成后并不会应用样式，也就不会阻塞浏览器渲染了。如果想在下载完成后应用样式，可以在 `onload` 回调函数中修改 `rel` 的值为 `stylesheet`，像正常阻塞样式表一样应用。
-另外，由于[浏览器支持度](https://caniuse.com/#feat=link-rel-preload)问题，loadCSS 提供了 [polyfill](https://github.com/filamentgroup/loadCSS/blob/master/src/cssrelpreload.js) （使用 media 属性），以及在不支持 JS 情况下降级。完整例子如下：
-{% prism html linenos %}
-<link rel="preload" href="path/to/mystylesheet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="path/to/mystylesheet.css"></noscript>
-<script>
-/*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
-(function(){ ... }());
-</script>
-{% endprism %}
-
-我们以 Vue 项目为例，首先必须要保证 Vue 实例在异步样式表加载完毕后进行[挂载](https://vuejs.org/v2/api/#vm-mount)，如果此时样式还没有完成，我们把挂载方法放到全局，等到样式加载完成后再调用：
-{% prism javascript linenos %}
-app = new App();
-window.mountApp = () => {
-    app.$mount('#app');
-};
-if (window.STYLE_READY) {
-    window.mountApp();
-}
-{% endprism %}
-
-然后使用 `<link ref='preload'>`，当加载完成时，如果发现全局有 `mountApp`，就执行挂载：
-{% prism html linenos %}
-<link rel='preload' href='index.css' as='style' onload='this.onload=null;this.rel='stylesheet';window.STYLE_READY=1;window.mountApp&&window.mountApp();'>
-{% endprism %}
-
-最终效果如下：
-![image](https://user-images.githubusercontent.com/3608471/36834922-6e99d466-1d6f-11e8-8364-b73bc7a9dbb5.png)
+无论是 SPA 下的 PRPL 模式，还是 SSR 下的同构思路，灵活运用其中的技术思路，借助 App Shell 模型，成熟的框架以及构建工具，相信一定能开发出更多高质量的 PWA 应用。
 
 ## 参考资料
 
