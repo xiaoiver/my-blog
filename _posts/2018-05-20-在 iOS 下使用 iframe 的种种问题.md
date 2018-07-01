@@ -53,7 +53,9 @@ index: 48
 
 但是 iOS 不支持这个属性，详见 [Bug Report](https://bugs.webkit.org/show_bug.cgi?id=149264) 以及 [Online Demo](http://output.jsbin.com/dedega)。
 
-AMP 使用了这么一种解决方法：虽然 iframe 不能滚动，但是可以把 HTML 和 BODY 作为滚动容器，让其中的内容滚动。[Online Demo](http://output.jsbin.com/deyibinehu)
+### 原始方案
+
+AMP 最初使用了这么一种解决方法：虽然 iframe 不能滚动，但是可以把 HTML 和 BODY 作为滚动容器，让其中的内容滚动。[Online Demo](http://output.jsbin.com/deyibinehu)
 {% prism html linenos %}
 <html style="overflow-y: auto; -webkit-overflow-scrolling: touch;">
 <head></head>
@@ -71,15 +73,23 @@ AMP 使用了这么一种解决方法：虽然 iframe 不能滚动，但是可�
 </html>
 {% endprism %}
 
-这种方法存在以下问题：
+虽然 iframe 可以滚动了，但是这种方法存在以下问题：
 1. 在 AMP 中，用户定义在 body 上的部分 CSS 规则会失效，例如 `margin`
-2. 由于在容器内滚动，`body.scrollTop` 会始终为 0
+2. 由于在容器内滚动，`body.scrollTop` 会始终为 0，`body.scrollHeight` 也等于视口高度而非实际全部内容高度
 
-于是 AMP 很快提出了一种**改进方案**。
+第二个问题影响很大，例如要实现“回到顶部”这样的组件，就无法通过 `window.scrollTo()` 完成了。
+针对这个问题，AMP 给出了这样的 HACK 方案：
+* 向 `<body>` 中插入一个不可见的定位元素 `<div>`，使用绝对定位 `position:absolute;top:0;left:0;width:0;height:0;visibility:hidden;`
+* 这样在滚动时，通过 `-topElement.getBoundingClientRect().top` 得到顶部的滚动距离
+* 类似的，插入另一个底部定位元素，通过 `endElement.offsetTop` 获取滚动高度
+* 创建一个新的顶部定位元素，在执行滚动到某个位置时，改变其 `top`，然后调用 `scrollIntoView()`
+
+很麻烦是不是，需要创建三个定位元素。于是 AMP 很快提出了一种**改进方案**。
 
 ### 改进方案
 
-既然直接在 body 上滚动会有损失，在 body 外再套一个 wrapper。之所以选择 `<html>` 是为了保证 `html > body` 这样的规则能继续生效。
+既然直接在 body 上滚动会有损失，在 body 外再套一个 wrapper。
+之所以选择 `<html>` 是为了保证 `html > body` 这样的规则能继续生效。
 {% prism html linenos %}
 <html AMP
     style="overflow-y: auto; -webkit-overflow-scrolling: touch;">
@@ -125,6 +135,12 @@ Object.defineProperty(document, 'body', {
     get: () => body,
 });
 {% endprism %}
+
+AMP 目前使用的就是这种方案，但是我在 iOS 7 的测试中，会报出错误。
+原因是不支持在例如 `document` 这样的对象上调用 `defineProperty`。
+
+在我们的开发场景下，为了兼容 iOS 7，最终采用的其实是第一种原始方案。
+当然如果不考虑 iOS 7 的覆盖情况，可以大胆采用这个改进方案。
 
 如果说不支持非标准的 `scrolling` 属性还可以理解，下面这个问题就很莫名了。
 
@@ -233,6 +249,46 @@ el.addEventListener('touchstart', function() {
 
 其实 Google AMP 也是这么做的，在 iOS 上打开 AMP 页面，滚动到顶触发 iOS 的弹性滚动，仔细观察页面会有一个轻微的不易察觉的滚动。
 
+但是有两点需要注意：
+* 最好不要监听 `touchstart` 事件，否则在一些第三方浏览器（UC）中，会出现点击输入框弹起软键盘时出现不必要的滚动。应该监听 `scroll` 事件。
+* 如果监听的是 `scroll` 事件，页面在初始状态就应该触发一次，或者直接调用滚动 1px。`touchstart` 则不需要。
+
+## UC/手百 隐藏 iframe 造成页面未响应
+
+这个问题一般的场景不会遇到，包括 AMP，是关于隐藏掉已有的 iframe 造成的。
+
+在 MIP 的多页面切换方案中，进行页面切换时，会把当前的 `<iframe>` 进行隐藏/展现，使用 `display: none`。
+但是在 iOS 的 **UC/手百** 下，切换时会出现页面不响应，假死的现象，十分奇怪。
+
+打开这个简单的 **_测试页面 /mip/examples/page/iframe/uc.html_** ，就可以复现，步骤如下：
+1. 原始页面使用 `<iframe>` 嵌入一个测试页面 `scroll.html`
+2. 点击隐藏按钮隐藏掉整个 iframe
+3. 原始页面不响应，表现为无法滚动，按钮无法点击等等
+
+测试页面 `scroll.html` 包含一个菜单，使用了 iOS 弹性滚动。另外还包含以下测试：
+1. 嵌入 `m.baidu`，`AMP 页面` 都会出现这种情况。而 PC 百度，eleme H5 则不会出现。
+2. 使用以下方法隐藏 `<iframe>` 同样会出问题：
+  - `visibility: hidden`
+  - `opacity: 0` + `height: 0` + `width: 0`
+
+经过一番探索，发现 iOS 下 UC/手百 使用的是 UIWebView，而使用了较新的 WKWebview 的例如微信就不存在这个问题。
+UIWebView 除了这个奇怪的问题，还有诸如 **scroll 事件延迟** 等其他滚动相关的问题，[详见](https://harttle.land/2018/06/23/uiwebview-bugs.html)。
+
+总之，有问题的页面使用了弹性滚动 `-webkit-overflow-scrolling: touch;`。
+而一旦不使用这个属性，或者在隐藏 iframe 的同时由被嵌入的页面去掉这个属性，就不会出现问题。
+```javascript
+// 需要在隐藏的同时去掉 -webkit-overflow-scrolling: touch;
+iframe.contentDocument.querySelector('.menu').classList.remove('touch-scrolling')
+```
+
+最终，我们使用了这种方法覆盖掉弹性滚动特性，在页面 `<iframe>` 隐藏时插入一段固定的
+`<style>* {-webkit-overflow-scrolling: auto!important;}</style>`
+[ISSUE](https://github.com/mipengine/mip2/issues/19)
+
+## 总结
+
+iOS + iframe，简直就是无尽的麻烦。
+
 ## 参考资料
 
 * [AMP, iOS, Scrolling and Position Fixed](https://medium.com/@dvoytenko/amp-ios-scrolling-and-position-fixed-b854a5a0d451)
@@ -240,3 +296,4 @@ el.addEventListener('touchstart', function() {
 * [The AMP Project and Igalia working together to improve WebKit and the Web Platform](http://frederic-wang.fr/amp-and-igalia-working-together-to-improve-the-web-platform.html)
 * [Body scroll lock — making it work with everything](https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177)
 * [Six things I learnt about iOS Safari's rubber band scrolling](http://blog.christoffer.online/2015-06-10-six-things-i-learnt-about-ios-rubberband-overflow-scrolling/)
+* [MIP ISSUE - iOS 下 UC/手百 切换页面造成未响应](https://github.com/mipengine/mip2/issues/19)
