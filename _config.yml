@@ -81,10 +81,7 @@ kramdown:
 
 # PWA
 pwa:
-  sw_filename: service-worker.js
   dest_js_directory: assets/js
-  cache_name: xiaop-blog-cache
-  precache_channel_name: sw-precache
   precache_recent_posts_num: 3
   precache_glob_directory: /
   precache_glob_patterns:
@@ -93,15 +90,6 @@ pwa:
   precache_glob_ignores:
     - sw-register.js
     - "fonts/**/*"
-  runtime_cache:
-    - route: /assets\/(img|icons)/
-      strategy: cacheFirst
-    - route: /^https?:\/\/cdn.staticfile.org/
-      strategy: staleWhileRevalidate
-    - route: /^https?:\/\/at.alicdn.com/
-      strategy: staleWhileRevalidate
-    - route: /^https?:\/\/cloud.netlifyusercontent.com/
-      strategy: staleWhileRevalidate
 
 RSS: false
 
