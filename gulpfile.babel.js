@@ -85,7 +85,6 @@ gulp.task('serve', ['jekyll-build'], () => {
     // Warch html changes.
     gulp.watch([
         'dev/sass/*.scss',
-        'assets/**/*.js',
         'dev/js/*.js',
         '_includes/**/*.html',
         '_layouts/**/*.html',
