@@ -5,3 +5,5 @@ https://developers.google.com/web/tools/workbox/guides/handle-third-party-reques
 https://stackoverflow.com/questions/39109789/what-limitations-apply-to-opaque-responses
 
 https://serviceworke.rs/
+
+http://performantcode.com/web/do-you-really-know-cors
