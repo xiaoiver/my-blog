@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "HDR Tone Mapping"
-cover: "https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549519347047-9e150ee0-2f35-4bda-a5da-66b8caeff4b5.png#align=left&display=inline&height=209&linkTarget=_blank&originHeight=842&originWidth=1278&size=0&width=317"
+cover: "/assets/img/webgl/hdr1.png"
 date:   2019-02-05
 category: coding
 tags: WebGL
@@ -19,7 +19,7 @@ index: 76
 
 
 ## 摄影学经验
-摄影学中将 scene zone 映射到 print zone：<br />![屏幕快照 2019-02-01 下午1.49.10.png](https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549000177768-2e3844da-ad35-40ae-bb7d-d0c9a8488f69.png#align=left&display=inline&height=329&linkTarget=_blank&name=%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-02-01%20%E4%B8%8B%E5%8D%881.49.10.png&originHeight=752&originWidth=1254&size=144310&width=549)<br />术语
+摄影学中将 scene zone 映射到 print zone：<br />![屏幕快照 2019-02-01 下午1.49.10.png](/assets/img/webgl/hdr2.png)<br />术语
 * **动态范围 Dynamic range**: In computer graphics the dynamic range of a
 scene is expressed as the ratio of the highest scene luminance
 to the lowest scene luminance
@@ -28,9 +28,9 @@ normal, or dark. A white-painted room would be high-key,
 and a dim stable would be low-key
 
 ## Reinhard 基础算法
-首先计算出场景的基调（key），选取 N 个像素点的亮度进行 log 平均。这里原论文有一处错误 [🔗](https://www.phototalks.idv.tw/academic/?p=861)：<br />                                            ![](https://intranetproxy.alipay.com/skylark/lark/__latex/f3afef1902f79ab793712a99f71bbdab.svg#card=math&code=%5Cbar%7BL%7D_%7Bw%7D%20%3D%20exp%28%5Cfrac%7B1%7D%7BN%7D%5Csum_%7Bx%2Cy%7D%7Blog%28%5Cdelta%2B%20L_%7Bw%7D%28x%2Cy%29%29%7D%29&height=49&width=261)<br />调节像素点亮度时，需要用到 a 这个表示 normal-key 基调的值：<br />                                                    ![](https://intranetproxy.alipay.com/skylark/lark/__latex/abd81d03c129732392470442011970b0.svg#card=math&code=L%28x%2Cy%29%20%3D%20%5Cfrac%7Ba%7D%7B%5Cbar%7BL%7D_%7Bw%7D%7DL_%7Bw%7D%28x%2Cy%29&height=41&width=163)<br />不同 a 取值效果如下，越大调节后自然越亮：<br />                        ![屏幕快照 2019-02-01 下午2.48.08.png](https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549003718743-b508b3af-2f0b-4f35-befc-d2e7cadf87b3.png#align=left&display=inline&height=285&linkTarget=_blank&name=%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202019-02-01%20%E4%B8%8B%E5%8D%882.48.08.png&originHeight=732&originWidth=1098&size=182721&width=428)
+首先计算出场景的基调（key），选取 N 个像素点的亮度进行 log 平均。这里原论文有一处错误 [🔗](https://www.phototalks.idv.tw/academic/?p=861)：<br />                                            ![](/assets/img/webgl/hdr3.svg)<br />调节像素点亮度时，需要用到 a 这个表示 normal-key 基调的值：<br />                                                    ![](/assets/img/webgl/hdr4.svg)<br />不同 a 取值效果如下，越大调节后自然越亮：<br />                        ![屏幕快照 2019-02-01 下午2.48.08.png](/assets/img/webgl/hdr3.png)
 
-显然这种线性调节的效果在实际应用中是有问题的，Lwhite 是场景中的最高亮度：<br />![](https://intranetproxy.alipay.com/skylark/lark/__latex/457d851c955e717fbeb8278d579b7149.svg#card=math&code=L_%7Bd%7D%28x%2Cy%29%20%3D%20%5Cfrac%7BL%28x%2Cy%29%281%20%2B%20%5Cfrac%7BL%28x%2Cy%29%7D%7BL%5E%7B2%7D_%7Bwhite%7D%7D%29%7D%7B1%2BL%28x%2Cy%29%7D&height=65&width=222)
+显然这种线性调节的效果在实际应用中是有问题的，Lwhite 是场景中的最高亮度：<br />![](/assets/img/webgl/hdr5.svg)
 
 但是仍不完美，尤其是在很高动态范围的场景下，依然会丢失细节。
 
@@ -73,7 +73,7 @@ vec3 ToneMap( vec3 vColor ) {
 }
 {% endprism %}
 
-这里涉及到亮度的计算，RGB 色彩空间到 CIE：![](https://intranetproxy.alipay.com/skylark/lark/0/2019/svg/158945/1549007595479-a39da1c0-9115-4cfc-adf4-3677cc82d604.svg#align=left&display=inline&height=27&linkTarget=_blank&originHeight=21&originWidth=323&size=0&width=420)
+这里涉及到亮度的计算，RGB 色彩空间到 CIE：![](/assets/img/webgl/hdr6.svg)
 {% prism glsl linenos %}
 // https://en.wikipedia.org/wiki/Relative_luminance
 float linearToRelativeLuminance( const in vec3 color ) {
@@ -230,7 +230,7 @@ vec3 color = uncharted2ToneMap(tex) / uncharted2ToneMap(whiteScale);
 > 然而对于实时渲染来说，没必要用全套ACES。因为第一，没有什么“输入设备”。渲染出来的HDR图像就是个线性的数据，所以直接就在ACES空间中。而输出的时候需要一次tone mapping，转到LDR或另一个HDR。也就是说，我们只要ACES里的非常小的一条路径，而不是纷繁复杂的整套体系。
 
 
-「[ACES Filmic Tone Mapping Curve](https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/)」中拟合的也是一条 S 曲线，可见和专业人士提供的曲线（虚线）重合度已经很高了，因此现在主流 3D 引擎（包括 clay.gl）HDR 方案也都是选择的这种方法：<br />![](https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549021113086-4406fcdd-4612-45f3-9671-43b94c8cb82a.png#align=left&display=inline&height=166&linkTarget=_blank&originHeight=366&originWidth=576&size=0&width=261)
+「[ACES Filmic Tone Mapping Curve](https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/)」中拟合的也是一条 S 曲线，可见和专业人士提供的曲线（虚线）重合度已经很高了，因此现在主流 3D 引擎（包括 clay.gl）HDR 方案也都是选择的这种方法：<br />![](/assets/img/webgl/hdr4.png)
 {% prism glsl linenos %}
 vec3 ACESToneMapping(vec3 color)
 {
@@ -272,7 +272,7 @@ texel.rgb *= exposureBias;
 texel.rgb = ACESToneMapping(texel.rgb);
 {% endprism %}
 
-来自 Unreal 同样曝光度设为 3，应用了 ACES 之后（左侧）明显比老版本的 ToneMapping （右侧）保留了更多细节：<br />![](https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549519347047-9e150ee0-2f35-4bda-a5da-66b8caeff4b5.png#align=left&display=inline&height=209&linkTarget=_blank&originHeight=842&originWidth=1278&size=0&width=317)![](https://intranetproxy.alipay.com/skylark/lark/0/2019/png/158945/1549519346930-507e21de-1cb3-402d-b272-198e67e906c8.png#align=left&display=inline&height=208&linkTarget=_blank&originHeight=842&originWidth=1278&size=0&width=316)
+来自 Unreal 同样曝光度设为 3，应用了 ACES 之后（左侧）明显比老版本的 ToneMapping （右侧）保留了更多细节：<br />![](/assets/img/webgl/hdr1.png)![](/assets/img/webgl/hdr5.png)
 
 ## RGBM
 现在我们有了各种各样的 Tone Mapping 算法，那么一个关键的问题是，如何存储这些超出 0 -255 范围的 RGB 颜色值呢？
